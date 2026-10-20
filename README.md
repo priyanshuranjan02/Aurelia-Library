@@ -8,15 +8,17 @@ A responsive Library Management System built with Spring Boot, MySQL, and a vani
 - Role-based authorization for administrators and librarians.
 - Books, students, and librarians CRUD operations.
 - Borrow and return workflow with availability protection and preserved history.
+- Pessimistic locking for concurrent borrow/return operations.
+- Flyway-managed schema creation and Hibernate schema validation.
 - Dashboard totals and a safe current-user profile view.
 - Responsive desktop and mobile interface.
 - Server-side validation with field-level frontend feedback.
-- MockMvc integration tests, including the real browser CSRF cookie/header flow.
+- MockMvc integration tests, including browser CSRF cookie/header behavior and concurrent borrowing.
 - Repository tests for ISBN uniqueness and auditing timestamps.
 
 ## Technology Stack
 
-Java 21, Spring Boot 3.5, Spring Security 6.5, Spring Data JPA, Hibernate, MySQL, HTML, CSS, JavaScript, Fetch API, Maven, JUnit 5, MockMvc, and H2 for isolated tests.
+Java 21, Spring Boot 3.5, Spring Security 6.5, Spring Data JPA, Hibernate, Flyway, MySQL, HTML, CSS, JavaScript, Fetch API, Maven, JUnit 5, MockMvc, and H2 for isolated tests.
 
 ## Project Architecture
 
@@ -39,7 +41,7 @@ The complete architecture, ADRs, database design, API conventions, and frozen de
 
 ```text
 .
-├── backend/       Spring Boot application, frontend assets, and tests
+├── backend/       Spring Boot application, frontend assets, migrations, and tests
 ├── docs/          Architecture, API, setup, testing, and release documents
 ├── screenshots/   Desktop and mobile review evidence
 └── README.md      Project entry point
@@ -65,13 +67,15 @@ Prerequisites: Java 21+, MySQL, and a database account that can create/use `libr
 
 ```bash
 export LMS_DB_USERNAME=your_mysql_user
-export LMS_DB_PASSWORD=your_mysql_password
+export LMS_DB_PASSWORD='your_mysql_password'
+export LMS_BOOTSTRAP_ADMIN_USERNAME=admin
+export LMS_BOOTSTRAP_ADMIN_PASSWORD='choose-a-strong-unique-password'
 ./mvnw spring-boot:run
 ```
 
-Open <http://localhost:8080>. The local development seed is `admin` / `ChangeMe123!`; change it before any non-local deployment.
+Open <http://localhost:8080>. The bootstrap administrator is created only if both admin environment variables are set and that username does not already exist. Its password is stored as a BCrypt hash; the environment value does not reset an existing account's password.
 
-Detailed configuration is in [docs/SETUP.md](docs/SETUP.md).
+Database creation for a fresh MySQL installation is managed by Flyway. Existing non-empty databases are baselined at migration version 1 and checked by Hibernate schema validation; back up and test against a copy before upgrading. Full guidance is in [docs/SETUP.md](docs/SETUP.md).
 
 ## Testing
 
@@ -81,7 +85,7 @@ Run the full isolated test suite from the repository root:
 ./mvnw clean test
 ```
 
-Tests use H2 in MySQL compatibility mode and include authentication, role restrictions, CRUD, borrow/return, validation, ISBN conflicts, CSRF cookie/header exchange, and repository safeguards. See [docs/TESTING.md](docs/TESTING.md).
+Tests use H2 in MySQL compatibility mode and cover authentication, role restrictions, CRUD, borrow/return, validation, ISBN conflicts, CSRF cookie/header exchange, repository safeguards, and a concurrent attempt to borrow the same book. See [docs/TESTING.md](docs/TESTING.md).
 
 ## Screenshots
 
