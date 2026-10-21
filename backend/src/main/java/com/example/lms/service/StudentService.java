@@ -1,7 +1,98 @@
 package com.example.lms.service;
-import com.example.lms.dto.*; import com.example.lms.entity.*; import com.example.lms.exception.*; import com.example.lms.repository.*; import org.springframework.security.crypto.password.PasswordEncoder; import org.springframework.stereotype.Service; import org.springframework.transaction.annotation.Transactional; import java.util.List;
-@Service public class StudentService { private final StudentProfileRepository students; private final AccountRepository accounts; private final PasswordEncoder passwords; public StudentService(StudentProfileRepository s,AccountRepository a,PasswordEncoder p){students=s;accounts=a;passwords=p;}
- @Transactional(readOnly=true) public List<StudentResponse> list(){return students.findAll().stream().map(this::response).toList();} @Transactional(readOnly=true) public StudentResponse get(Long id){return response(student(id));}
- @Transactional public StudentResponse create(StudentRequest r){if(accounts.existsByUsername(r.username()))throw new ConflictException("Username is already in use.");var a=new Account();a.setUsername(r.username().trim());a.setPasswordHash(passwords.encode(r.password()));a.setRole(Role.STUDENT);var p=new StudentProfile();p.setAccount(accounts.save(a));apply(p,r);return response(students.save(p));}
- @Transactional public StudentResponse update(Long id,StudentUpdateRequest r){var p=student(id);if(!p.getAccount().getUsername().equals(r.username())&&accounts.existsByUsername(r.username()))throw new ConflictException("Username is already in use.");p.getAccount().setUsername(r.username().trim());apply(p,r);return response(students.save(p));}
- @Transactional public void delete(Long id){students.delete(student(id));} private StudentProfile student(Long id){return students.findById(id).orElseThrow(()->new ResourceNotFoundException("Student %d was not found.".formatted(id)));} private void apply(StudentProfile p,StudentRequest r){p.setName(r.name().trim());p.setEmail(r.email().trim());p.setPhone(r.phone().trim());} private void apply(StudentProfile p,StudentUpdateRequest r){p.setName(r.name().trim());p.setEmail(r.email().trim());p.setPhone(r.phone().trim());} private StudentResponse response(StudentProfile p){var a=p.getAccount();return new StudentResponse(p.getId(),a.getId(),a.getUsername(),p.getName(),p.getEmail(),p.getPhone(),a.getRole().name());}}
+
+import com.example.lms.dto.StudentRequest;
+import com.example.lms.dto.StudentResponse;
+import com.example.lms.dto.StudentUpdateRequest;
+import com.example.lms.entity.Account;
+import com.example.lms.entity.Role;
+import com.example.lms.entity.StudentProfile;
+import com.example.lms.exception.ConflictException;
+import com.example.lms.exception.ResourceNotFoundException;
+import com.example.lms.repository.AccountRepository;
+import com.example.lms.repository.StudentProfileRepository;
+import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+public class StudentService {
+    private final StudentProfileRepository students;
+    private final AccountRepository accounts;
+    private final PasswordEncoder passwords;
+
+    public StudentService(StudentProfileRepository students, AccountRepository accounts, PasswordEncoder passwords) {
+        this.students = students;
+        this.accounts = accounts;
+        this.passwords = passwords;
+    }
+
+    @Transactional(readOnly = true)
+    public List<StudentResponse> list() {
+        return students.findAll().stream().map(this::response).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public StudentResponse get(Long id) {
+        return response(student(id));
+    }
+
+    @Transactional
+    public StudentResponse create(StudentRequest request) {
+        String username = request.username().trim();
+        if (accounts.existsByUsername(username)) {
+            throw new ConflictException("Username is already in use.");
+        }
+
+        var account = new Account();
+        account.setUsername(username);
+        account.setPasswordHash(passwords.encode(request.password()));
+        // The role is selected by the server, never from a public request field.
+        account.setRole(Role.STUDENT);
+
+        var profile = new StudentProfile();
+        profile.setAccount(accounts.save(account));
+        apply(profile, request);
+        return response(students.save(profile));
+    }
+
+    @Transactional
+    public StudentResponse update(Long id, StudentUpdateRequest request) {
+        var profile = student(id);
+        String username = request.username().trim();
+        if (!profile.getAccount().getUsername().equals(username) && accounts.existsByUsername(username)) {
+            throw new ConflictException("Username is already in use.");
+        }
+        profile.getAccount().setUsername(username);
+        apply(profile, request);
+        return response(students.save(profile));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        students.delete(student(id));
+    }
+
+    private StudentProfile student(Long id) {
+        return students.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Student %d was not found.".formatted(id)));
+    }
+
+    private void apply(StudentProfile profile, StudentRequest request) {
+        profile.setName(request.name().trim());
+        profile.setEmail(request.email().trim());
+        profile.setPhone(request.phone().trim());
+    }
+
+    private void apply(StudentProfile profile, StudentUpdateRequest request) {
+        profile.setName(request.name().trim());
+        profile.setEmail(request.email().trim());
+        profile.setPhone(request.phone().trim());
+    }
+
+    private StudentResponse response(StudentProfile profile) {
+        var account = profile.getAccount();
+        return new StudentResponse(profile.getId(), account.getId(), account.getUsername(), profile.getName(),
+                profile.getEmail(), profile.getPhone(), account.getRole().name());
+    }
+}

@@ -3,92 +3,280 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Responsive Library Management System">
-  <title>Library Management System</title>
+  <meta name="theme-color" content="#f7f6ff">
+  <meta name="description" content="Aurelia Library — an elegant, responsive library management workspace.">
+  <title>Aurelia Library — Spatial Glass</title>
   <link rel="icon" href="/assets/library-mark.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/tokens.css">
   <link rel="stylesheet" href="/css/base.css">
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/components.css">
   <link rel="stylesheet" href="/css/responsive.css">
+  <link rel="stylesheet" href="/css/public.css">
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <div class="app-shell">
-    <header class="site-header">
-      <a class="brand" href="#dashboard" aria-label="Library Management System dashboard">
-        <span class="brand-mark" aria-hidden="true"><img src="/assets/library-mark.svg" alt=""></span>
-        <span>Library Management</span>
+    <button class="nav-scrim" type="button" data-action="close-nav" aria-label="Close navigation"></button>
+    <aside class="app-sidebar" id="app-sidebar" aria-label="Application sidebar">
+      <a class="brand-lockup" href="#dashboard" aria-label="Aurelia Library home">
+        <span class="brand-symbol"><img src="/assets/library-mark.svg" alt=""></span>
+        <span class="brand-copy"><strong>Aurelia</strong><small>LIBRARY WORKSPACE</small></span>
       </a>
-      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation">Menu</button>
-      <nav id="primary-navigation" class="primary-navigation" aria-label="Primary navigation">
-        <a href="#dashboard" data-route="dashboard">Dashboard</a>
-        <a href="#books" data-route="books">Books</a>
-        <a href="#students" data-route="students">Students</a>
-        <a href="#librarians" data-route="librarians">Librarians</a>
-        <a href="#borrow-records" data-route="borrow-records">Borrow records</a>
-        <a href="#profile" data-route="profile">Profile</a>
-        <button class="nav-logout" type="button" data-action="logout">Logout</button>
+      <div class="sidebar-section-label">WORKSPACE</div>
+      <nav class="side-navigation" aria-label="Primary navigation">
+        <a href="#dashboard" data-route="dashboard" data-roles="ADMIN,LIBRARIAN"><span class="nav-glyph" aria-hidden="true">◫</span><span>Overview</span><span class="nav-arrow" aria-hidden="true">↗</span></a>
+        <a href="#books" data-route="books"><span class="nav-glyph" aria-hidden="true">▤</span><span>Book collection</span></a>
+        <a href="#students" data-route="students" data-roles="ADMIN,LIBRARIAN"><span class="nav-glyph" aria-hidden="true">♙</span><span>Students</span></a>
+        <a href="#librarians" data-route="librarians" data-role="ADMIN"><span class="nav-glyph" aria-hidden="true">✳</span><span>Librarians</span></a>
+        <a href="#borrow-records" data-route="borrow-records" data-roles="ADMIN,LIBRARIAN,STUDENT"><span class="nav-glyph" aria-hidden="true">↗</span><span id="borrow-nav-label">Borrow records</span><span class="nav-count" id="active-loan-count">—</span></a>
       </nav>
-    </header>
+      <div class="sidebar-section-label sidebar-secondary-label">PERSONAL</div>
+      <nav class="side-navigation" aria-label="Personal navigation">
+        <a href="#profile" data-route="profile"><span class="nav-glyph" aria-hidden="true">◎</span><span>My profile</span></a>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-note">
+        <span class="note-orb" aria-hidden="true"><span></span></span>
+        <div><strong>A little more order.</strong><p>Your library, in good hands.</p></div>
+      </div>
+      <div class="sidebar-footer"><span class="online-dot"></span><span>Workspace protected</span><span class="footer-lock" aria-hidden="true">⌑</span></div>
+    </aside>
 
-    <main id="main-content" tabindex="-1">
-      <section class="page-view" data-page="login" aria-labelledby="login-title">
-        <div class="auth-layout">
-          <div class="auth-card">
-            <img class="auth-brand-mark" src="/assets/library-mark.svg" alt="" aria-hidden="true">
-            <span class="eyebrow">Library Management System</span>
-            <h1 id="login-title">Welcome back</h1>
-            <p>Sign in to access the library workspace.</p>
-            <form id="login-form" novalidate>
-              <label for="login-username">Username</label>
-              <input id="login-username" name="username" autocomplete="username" required>
-              <p class="field-error" data-error-for="username"></p>
-              <label for="login-password">Password</label>
-              <input id="login-password" name="password" type="password" autocomplete="current-password" required>
-              <p class="field-error" data-error-for="password"></p>
-              <button class="button button-primary button-block" type="submit">Sign in</button>
-            </form>
-          </div>
+    <div class="app-frame">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="icon-button mobile-menu-button" type="button" data-action="toggle-nav" aria-label="Open navigation" aria-expanded="false" aria-controls="app-sidebar"><span aria-hidden="true">☰</span></button>
+          <div class="breadcrumb"><span>LIBRARY /</span><strong id="topbar-section">Overview</strong></div>
         </div>
-      </section>
+        <div class="topbar-right">
+          <div class="topbar-date"><span class="date-spark" aria-hidden="true">✦</span><span id="today-label">A thoughtful day at the library</span></div>
+          <span class="topbar-divider" aria-hidden="true"></span>
+          <div class="identity-chip" aria-label="Signed-in user"><span class="avatar-circle" id="header-avatar">A</span><span class="identity-copy"><strong data-user-name>Account</strong><small data-user-role>Member</small></span></div>
+          <button class="icon-button logout-button" type="button" data-action="logout" aria-label="Sign out" title="Sign out"><span aria-hidden="true">↗</span></button>
+        </div>
+      </header>
 
-      <section class="page-view" data-page="dashboard" aria-labelledby="dashboard-title">
-        <div class="page-heading"><div><span class="eyebrow">Overview</span><h1 id="dashboard-title">Dashboard</h1><p>Monitor the library's current activity.</p></div></div>
-        <div class="stat-grid" id="dashboard-stats" aria-live="polite"></div>
-        <div class="dashboard-actions card"><h2>Quick actions</h2><p>Move directly to common library tasks.</p><div class="button-row"><a class="button button-primary" href="#books">Manage books</a><a class="button button-teal" href="#borrow-records">Manage borrow records</a></div></div>
-      </section>
+      <main id="main-content" tabindex="-1">
+        <section class="page-view public-home active" data-page="home" aria-labelledby="public-home-title">
+          <div class="public-home-wrap">
+            <header class="public-nav">
+              <a class="brand-lockup" href="#home" aria-label="Aurelia Library home">
+                <span class="brand-symbol"><img src="/assets/library-mark.svg" alt=""></span>
+                <span class="brand-copy"><strong>Aurelia</strong><small>LIBRARY WORKSPACE</small></span>
+              </a>
+              <nav class="public-nav-actions" aria-label="Public navigation">
+                <a class="public-nav-link" href="#login">Sign in</a>
+                <a class="button button-primary public-nav-cta" href="#register">Create student account <span aria-hidden="true">↗</span></a>
+              </nav>
+            </header>
 
-      <section class="page-view" data-page="books" aria-labelledby="books-title">
-        <div class="page-heading"><div><span class="eyebrow">Catalogue</span><h1 id="books-title">Books</h1><p>Manage titles and their current availability.</p></div><button class="button button-primary" type="button" data-open-modal="book">Add new book</button></div>
-        <div class="toolbar"><label class="search-field" for="book-search">Search books<input id="book-search" type="search" placeholder="Title or author"></label></div>
-        <div class="table-card"><table><thead><tr><th>Title</th><th>Author</th><th>ISBN</th><th>Published</th><th>Status</th><th>Actions</th></tr></thead><tbody id="books-table"></tbody></table></div>
-      </section>
+            <section class="public-hero" aria-labelledby="public-home-title">
+              <div class="public-hero-copy">
+                <span class="hero-eyebrow"><span class="hero-eyebrow-dot"></span> A calmer kind of library</span>
+                <h1 id="public-home-title">Every story.<br><span>Its place in the world.</span></h1>
+                <p>A thoughtful home for books, readers, and the people who care for them. Keep the collection in order and make the next discovery feel effortless.</p>
+                <div class="public-hero-actions">
+                  <a class="button button-light" href="#register"><span aria-hidden="true">＋</span> Join as a student</a>
+                  <a class="public-secondary-link" href="#login">Already have an account? Sign in <span aria-hidden="true">↗</span></a>
+                </div>
+                <div class="public-proof-row"><span class="public-proof-dot" aria-hidden="true">✓</span><span>Protected accounts</span><span class="public-proof-separator" aria-hidden="true"></span><span>Simple circulation</span><span class="public-proof-separator" aria-hidden="true"></span><span>One calm workspace</span></div>
+              </div>
+              <div class="public-hero-art" aria-hidden="true">
+                <div class="public-art-orbit orbit-one"></div><div class="public-art-orbit orbit-two"></div><div class="public-art-orbit orbit-three"></div>
+                <div class="public-art-glow"></div>
+                <div class="public-book public-book-jade"><span class="public-book-emblem"></span><i></i></div>
+                <div class="public-book public-book-violet"><span class="public-book-emblem"></span><i></i></div>
+                <div class="public-book public-book-sand"><span class="public-book-emblem"></span><i></i></div>
+                <div class="public-art-card"><span class="public-art-card-icon">✧</span><span><strong>Made for discovery</strong><small>One library, in harmony.</small></span></div>
+                <span class="public-art-star star-one">✦</span><span class="public-art-star star-two">✧</span><span class="public-art-star star-three">✦</span>
+              </div>
+            </section>
 
-      <section class="page-view" data-page="students" aria-labelledby="students-title">
-        <div class="page-heading"><div><span class="eyebrow">People</span><h1 id="students-title">Students</h1><p>Manage student accounts and contact profiles.</p></div><button class="button button-primary" type="button" data-open-modal="student">Add student</button></div>
-        <div class="table-card"><table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Username</th><th>Actions</th></tr></thead><tbody id="students-table"></tbody></table></div>
-      </section>
+            <section class="public-section" aria-labelledby="public-features-title">
+              <div class="public-section-heading"><span class="eyebrow">A LITTLE MORE ORDER</span><h2 id="public-features-title">Everything has its place.</h2><p>Useful tools that let the library work feel lighter.</p></div>
+              <div class="public-feature-grid">
+                <article class="public-feature-card"><span class="public-feature-icon violet">▤</span><h3>A living collection</h3><p>Keep titles, authors, ISBNs, and availability together in one searchable catalogue.</p></article>
+                <article class="public-feature-card"><span class="public-feature-icon jade">♙</span><h3>A connected community</h3><p>Give students a place in the library and help staff keep reader details current.</p></article>
+                <article class="public-feature-card"><span class="public-feature-icon lilac">↗</span><h3>Thoughtful circulation</h3><p>Record a loan, return a book, and keep the circulation history accounted for.</p></article>
+              </div>
+            </section>
 
-      <section class="page-view" data-page="librarians" aria-labelledby="librarians-title">
-        <div class="page-heading"><div><span class="eyebrow">People</span><h1 id="librarians-title">Librarians</h1><p>Administrator-only librarian management.</p></div><button class="button button-primary" type="button" data-open-modal="librarian">Add librarian</button></div>
-        <div class="table-card"><table><thead><tr><th>Name</th><th>Age</th><th>Phone</th><th>Username</th><th>Actions</th></tr></thead><tbody id="librarians-table"></tbody></table></div>
-      </section>
+            <section class="public-join-panel"><div><span class="eyebrow">YOUR NEXT CHAPTER</span><h2>Ready to find your place?</h2><p>Students can create their own reader account. Library staff accounts remain managed by an administrator.</p></div><div class="public-join-actions"><a class="button button-primary" href="#register">Create student account <span aria-hidden="true">↗</span></a><a class="public-secondary-link" href="#login">Sign in instead</a></div></section>
+            <footer class="public-footer"><a class="public-footer-brand" href="#home">Aurelia <span>/ library workspace</span></a><span>Made for curiosity <span aria-hidden="true">✦</span></span></footer>
+          </div>
+        </section>
 
-      <section class="page-view" data-page="borrow-records" aria-labelledby="records-title">
-        <div class="page-heading"><div><span class="eyebrow">Loans</span><h1 id="records-title">Borrow records</h1><p>Track active and completed library loans.</p></div><button class="button button-teal" type="button" data-open-modal="borrow">Record a borrow</button></div>
-        <div class="table-card"><table><thead><tr><th>Book</th><th>Borrower</th><th>Borrowed</th><th>Returned</th><th>Status</th><th>Actions</th></tr></thead><tbody id="records-table"></tbody></table></div>
-      </section>
+        <section class="page-view login-view" data-page="login" aria-labelledby="login-title">
+          <div class="auth-layout">
+            <div class="auth-story">
+              <div class="auth-story-orb auth-story-orb-one" aria-hidden="true"></div>
+              <div class="auth-story-orb auth-story-orb-two" aria-hidden="true"></div>
+              <span class="story-kicker"><span class="online-dot"></span> A calmer kind of library software</span>
+              <h1>Every story.<br><span>In its place.</span></h1>
+              <p class="story-copy">A thoughtful space to care for your collection, support your readers, and keep the little details in order.</p>
+              <div class="book-scene" aria-hidden="true">
+                <div class="scene-ring scene-ring-one"></div><div class="scene-ring scene-ring-two"></div>
+                <div class="floating-book book-back"><span></span><i></i></div>
+                <div class="floating-book book-mid"><span></span><i></i></div>
+                <div class="floating-book book-front"><span></span><i></i></div>
+                <div class="scene-glass-card"><span>✧</span><strong>Made for discovery</strong><small>One library, in harmony.</small></div>
+                <div class="scene-spark spark-one">✦</div><div class="scene-spark spark-two">✧</div>
+              </div>
+              <div class="story-footnote"><span>01</span><span class="story-footnote-line"></span><span>Thoughtful tools for everyday stewardship</span></div>
+            </div>
+            <div class="auth-side">
+              <div class="auth-card glass-panel">
+                <div class="auth-card-mark"><img src="/assets/library-mark.svg" alt="" aria-hidden="true"></div>
+                <div class="eyebrow">WELCOME BACK</div>
+                <h2 id="login-title">Step into your library.</h2>
+                <p class="auth-intro">Sign in to continue to your workspace.</p>
+                <form id="login-form" novalidate>
+                  <div class="form-field"><label for="login-username">Username</label><div class="input-wrap"><span class="input-leading" aria-hidden="true">◎</span><input id="login-username" name="username" autocomplete="username" placeholder="Your username" required></div><p class="field-error" data-error-for="username"></p></div>
+                  <div class="form-field"><label for="login-password">Password</label><div class="input-wrap"><span class="input-leading" aria-hidden="true">⌑</span><input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Your password" required><button class="password-toggle" type="button" data-action="toggle-password" aria-label="Show password">Show</button></div><p class="field-error" data-error-for="password"></p></div>
+                  <p class="login-error" id="login-error" role="alert" hidden></p>
+                  <button class="button button-primary button-block sign-in-button" type="submit"><span>Enter workspace</span><span aria-hidden="true">↗</span></button>
+                </form>
+                <div class="auth-switch-row"><span>New to Aurelia?</span><a href="#register">Create a student account</a></div>
+                <a class="auth-home-link" href="#home">← Back to the public homepage</a>
+                <div class="auth-security"><span class="security-icon" aria-hidden="true">⌑</span><span>Your session is secured by your library's sign-in.</span></div>
+              </div>
+              <div class="auth-bottom-line"><span>CURATED WITH CARE</span><span>© 2026 AURELIA LIBRARY</span></div>
+            </div>
+          </div>
+        </section>
 
-      <section class="page-view" data-page="profile" aria-labelledby="profile-title"><div class="page-heading"><div><span class="eyebrow">Account</span><h1 id="profile-title">Profile</h1><p>Your non-sensitive account information.</p></div></div><div id="profile-card" class="card"></div></section>
-    </main>
-    <footer>© 2026 Library Management System</footer>
+        <section class="page-view login-view register-view" data-page="register" aria-labelledby="register-title">
+          <div class="auth-layout">
+            <div class="auth-story">
+              <div class="auth-story-orb auth-story-orb-one" aria-hidden="true"></div>
+              <div class="auth-story-orb auth-story-orb-two" aria-hidden="true"></div>
+              <span class="story-kicker"><span class="online-dot"></span> Your next chapter starts here</span>
+              <h1>Find your place.<br><span>Follow a story.</span></h1>
+              <p class="story-copy">Create a reader account to join the library community. Your student access is assigned securely when your account is created.</p>
+              <div class="book-scene" aria-hidden="true">
+                <div class="scene-ring scene-ring-one"></div><div class="scene-ring scene-ring-two"></div>
+                <div class="floating-book book-back"><span></span><i></i></div>
+                <div class="floating-book book-mid"><span></span><i></i></div>
+                <div class="floating-book book-front"><span></span><i></i></div>
+                <div class="scene-glass-card"><span>✧</span><strong>A place to begin</strong><small>One reader, many stories.</small></div>
+                <div class="scene-spark spark-one">✦</div><div class="scene-spark spark-two">✧</div>
+              </div>
+              <div class="story-footnote"><span>02</span><span class="story-footnote-line"></span><span>Curiosity has a place here</span></div>
+            </div>
+            <div class="auth-side register-auth-side">
+              <div class="auth-card glass-panel register-card">
+                <div class="auth-card-mark"><img src="/assets/library-mark.svg" alt="" aria-hidden="true"></div>
+                <div class="eyebrow">JOIN AURELIA</div>
+                <h2 id="register-title">Create your reader account.</h2>
+                <p class="auth-intro">A few details, then you're ready to sign in.</p>
+                <form id="registration-form" novalidate>
+                  <div class="form-field"><label for="register-name">Full name</label><div class="input-wrap"><span class="input-leading" aria-hidden="true">♙</span><input id="register-name" name="name" autocomplete="name" maxlength="100" placeholder="Your full name" required></div><p class="field-error" data-register-error-for="name"></p></div>
+                  <div class="form-field"><label for="register-email">Email address</label><div class="input-wrap"><span class="input-leading" aria-hidden="true">@</span><input id="register-email" name="email" type="email" autocomplete="email" maxlength="100" placeholder="you@example.com" required></div><p class="field-error" data-register-error-for="email"></p></div>
+                  <div class="form-field"><label for="register-phone">Phone number</label><div class="input-wrap"><span class="input-leading" aria-hidden="true">⌕</span><input id="register-phone" name="phone" type="tel" autocomplete="tel" maxlength="20" placeholder="Your contact number" required></div><p class="field-error" data-register-error-for="phone"></p></div>
+                  <div class="form-field"><label for="register-username">Choose a username</label><div class="input-wrap"><span class="input-leading" aria-hidden="true">◎</span><input id="register-username" name="username" autocomplete="username" minlength="1" maxlength="50" placeholder="A username you'll remember" required></div><p class="field-error" data-register-error-for="username"></p></div>
+                  <div class="form-field"><label for="register-password">Create a password</label><div class="input-wrap"><span class="input-leading" aria-hidden="true">⌑</span><input id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="100" placeholder="At least 8 characters" required></div><p class="field-error" data-register-error-for="password"></p></div>
+                  <div class="form-field"><label for="register-confirm-password">Confirm password</label><div class="input-wrap"><span class="input-leading" aria-hidden="true">⌑</span><input id="register-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="100" placeholder="Enter the same password again" required></div><p class="field-error" data-register-error-for="confirmPassword"></p></div>
+                  <p class="login-error" id="registration-error" role="alert" hidden></p>
+                  <button class="button button-primary button-block sign-in-button" type="submit"><span>Create student account</span><span aria-hidden="true">↗</span></button>
+                </form>
+                <p class="registration-role-note"><span aria-hidden="true">⌑</span> New public accounts receive <strong>Student</strong> access. Staff accounts are created by an administrator.</p>
+                <div class="auth-switch-row"><span>Already a member?</span><a href="#login">Sign in</a></div>
+                <a class="auth-home-link" href="#home">← Back to the public homepage</a>
+                <div class="auth-security"><span class="security-icon" aria-hidden="true">⌑</span><span>Your password is hashed before it is stored.</span></div>
+              </div>
+              <div class="auth-bottom-line"><span>CURATED WITH CARE</span><span>© 2026 AURELIA LIBRARY</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-view" data-page="dashboard" aria-labelledby="dashboard-title">
+          <div class="dashboard-hero spatial-panel">
+            <div class="hero-copy"><span class="hero-eyebrow"><span class="hero-eyebrow-dot"></span> YOUR LIBRARY AT A GLANCE</span><h1 id="dashboard-title">Good to see you,<br><span id="dashboard-greeting">reader.</span></h1><p>Small details, well kept. Here's what's happening in your library today.</p><div class="hero-action-row"><a class="button button-light" href="#books"><span aria-hidden="true">＋</span> Explore collection</a><a class="hero-text-link" href="#borrow-records">View circulation <span aria-hidden="true">↗</span></a></div></div>
+            <div class="hero-art" aria-hidden="true"><div class="hero-halo hero-halo-large"></div><div class="hero-halo hero-halo-small"></div><div class="hero-art-orbit orbit-a"></div><div class="hero-art-orbit orbit-b"></div><div class="hero-book hero-book-a"><i></i></div><div class="hero-book hero-book-b"><i></i></div><div class="hero-book hero-book-c"><i></i></div><div class="hero-floating-card"><span class="float-icon">✧</span><div><strong id="hero-available-count">—</strong><small>ready to discover</small></div><span class="float-trend">↗</span></div><span class="hero-star star-a">✦</span><span class="hero-star star-b">✧</span></div>
+            <div class="hero-index"><span>01</span><span class="hero-index-line"></span><span>MAKE ROOM FOR CURIOSITY</span></div>
+          </div>
+          <div class="section-heading"><div><span class="eyebrow">THE BIG PICTURE</span><h2>Library pulse</h2></div><span class="subtle-label"><span class="online-dot"></span> Live from your workspace</span></div>
+          <div class="stat-grid" id="dashboard-stats" aria-live="polite"></div>
+          <div class="dashboard-lower">
+            <section class="surface-panel recent-panel" aria-labelledby="recent-title"><div class="panel-heading"><div><span class="eyebrow">RECENT MOVEMENT</span><h2 id="recent-title">Circulation, lately</h2></div><a class="quiet-link" href="#borrow-records">All records <span aria-hidden="true">↗</span></a></div><div id="recent-records" class="recent-list"><div class="loading-state">Gathering recent activity…</div></div></section>
+            <section class="surface-panel quick-panel" aria-labelledby="quick-title"><div class="panel-heading"><div><span class="eyebrow">A GOOD PLACE TO START</span><h2 id="quick-title">Quick actions</h2></div><span class="quick-decor" aria-hidden="true">✦</span></div><a class="quick-action" href="#books"><span class="quick-action-icon violet">▤</span><span><strong>Browse collection</strong><small>Find a title or update details</small></span><span class="quick-arrow" aria-hidden="true">↗</span></a><a class="quick-action" href="#students"><span class="quick-action-icon jade">♙</span><span><strong>Manage readers</strong><small>Keep member details current</small></span><span class="quick-arrow" aria-hidden="true">↗</span></a><a class="quick-action" href="#borrow-records"><span class="quick-action-icon lilac">↗</span><span><strong>Circulation desk</strong><small>Record or complete a loan</small></span><span class="quick-arrow" aria-hidden="true">↗</span></a><div class="quick-note"><span aria-hidden="true">✧</span><p>Every well-kept record makes the next visit a little smoother.</p></div></section>
+          </div>
+        </section>
+
+        <section class="page-view" data-page="books" aria-labelledby="books-title">
+          <div class="page-heading"><div><span class="eyebrow">THE COLLECTION</span><h1 id="books-title">Book collection</h1><p>A home for every title, ready for its next reader.</p></div><button class="button button-primary" type="button" data-open-modal="book" data-roles="ADMIN,LIBRARIAN"><span aria-hidden="true">＋</span> Add a title</button></div>
+          <div class="collection-ribbon"><span class="ribbon-symbol" aria-hidden="true">▤</span><div><strong id="book-count-label">Your catalogue, at a glance</strong><p>Search by title or author. Availability updates as books are borrowed and returned.</p></div><div class="ribbon-decoration" aria-hidden="true"><i></i><i></i><i></i></div></div>
+          <div class="table-toolbar"><label class="search-control" for="book-search"><span aria-hidden="true">⌕</span><input id="book-search" type="search" placeholder="Search titles, authors, ISBN…" autocomplete="off"><kbd>SEARCH</kbd></label><span class="table-meta" id="books-visible-count">Loading catalogue…</span></div>
+          <div class="table-card"><table><thead><tr><th>Title & author</th><th>ISBN</th><th>Published</th><th>Availability</th><th class="actions-column">Actions</th></tr></thead><tbody id="books-table"><tr><td colspan="5" class="empty-state">Gathering the collection…</td></tr></tbody></table></div>
+        </section>
+
+        <section class="page-view" data-page="students" aria-labelledby="students-title">
+          <div class="page-heading"><div><span class="eyebrow">THE PEOPLE</span><h1 id="students-title">Readers & students</h1><p>Keep your library community connected and up to date.</p></div><button class="button button-primary" type="button" data-open-modal="student" data-roles="ADMIN,LIBRARIAN"><span aria-hidden="true">＋</span> Add student</button></div>
+          <div class="table-toolbar"><label class="search-control" for="student-search"><span aria-hidden="true">⌕</span><input id="student-search" type="search" placeholder="Search name, email or username…" autocomplete="off"><kbd>SEARCH</kbd></label><span class="table-meta" id="students-visible-count">— readers</span></div>
+          <div class="table-card"><table><thead><tr><th>Reader</th><th>Contact</th><th>Username</th><th class="actions-column">Actions</th></tr></thead><tbody id="students-table"></tbody></table></div>
+        </section>
+
+        <section class="page-view" data-page="librarians" aria-labelledby="librarians-title">
+          <div class="page-heading"><div><span class="eyebrow">THE STEWARDS</span><h1 id="librarians-title">Librarians</h1><p>Manage the people who keep the collection moving.</p></div><button class="button button-primary" type="button" data-open-modal="librarian" data-role="ADMIN"><span aria-hidden="true">＋</span> Invite librarian</button></div>
+          <div class="table-toolbar"><label class="search-control" for="librarian-search"><span aria-hidden="true">⌕</span><input id="librarian-search" type="search" placeholder="Search name or username…" autocomplete="off"><kbd>SEARCH</kbd></label><span class="table-meta" id="librarians-visible-count">— librarians</span></div>
+          <div class="table-card"><table><thead><tr><th>Librarian</th><th>Age</th><th>Phone</th><th>Email</th><th>Username</th><th class="actions-column">Actions</th></tr></thead><tbody id="librarians-table"></tbody></table></div>
+        </section>
+
+        <section class="page-view" data-page="borrow-records" aria-labelledby="records-title">
+          <div class="page-heading"><div><span class="eyebrow">CIRCULATION DESK</span><h1 id="records-title">Borrow records</h1><p id="records-description">Every loan has a story. Keep each one accounted for.</p></div><button class="button button-jade" type="button" data-open-modal="borrow" data-roles="ADMIN,LIBRARIAN"><span aria-hidden="true">＋</span> Record a borrow</button></div>
+          <div class="loan-summary-row"><div class="loan-summary-card"><span class="loan-summary-icon active-icon">↗</span><div><small>ACTIVE LOANS</small><strong id="active-loan-total">—</strong></div></div><div class="loan-summary-card"><span class="loan-summary-icon returned-icon">✓</span><div><small>RETURNED BOOKS</small><strong id="returned-loan-total">—</strong></div></div><label class="filter-control" for="record-filter"><span>Show</span><select id="record-filter"><option value="">All records</option><option value="BORROWED">Currently borrowed</option><option value="RETURNED">Returned</option></select></label></div>
+          <div class="table-card"><table><thead><tr><th>Title</th><th>Borrower</th><th>Borrowed on</th><th>Returned on</th><th>Status</th><th class="actions-column">Action</th></tr></thead><tbody id="records-table"><tr><td colspan="6" class="empty-state">Gathering circulation history…</td></tr></tbody></table></div>
+        </section>
+
+        <section class="page-view" data-page="profile" aria-labelledby="profile-title">
+          <div class="page-heading"><div><span class="eyebrow">YOUR SPACE</span><h1 id="profile-title">Profile & settings</h1><p>Keep your details current and manage your account security.</p></div></div>
+          <div class="profile-layout"><div class="profile-hero spatial-panel"><div class="profile-avatar-large" id="profile-avatar">A</div><span class="profile-kicker">AURELIA MEMBER</span><h2 id="profile-display-name">Your library account</h2><p id="profile-welcome">Your workspace is ready.</p><span class="profile-role-pill" id="profile-role-pill">MEMBER</span><div class="profile-orbit" aria-hidden="true">✧</div></div><div id="profile-card" class="surface-panel profile-details"></div></div>
+          <div class="profile-settings-grid">
+            <section class="surface-panel profile-settings-card" aria-labelledby="profile-edit-title">
+              <div class="panel-heading"><div><span class="eyebrow">PERSONAL INFORMATION</span><h2 id="profile-edit-title">Edit profile</h2></div><span class="profile-settings-icon" aria-hidden="true">◎</span></div>
+              <p class="profile-settings-copy">Update your username and the personal details associated with your library account.</p>
+              <form id="profile-edit-form" novalidate>
+                <div class="profile-input-grid" id="profile-edit-fields"></div>
+                <p class="profile-form-note" id="profile-edit-note"></p>
+                <div class="profile-form-actions"><button class="button button-primary" type="submit">Save changes <span aria-hidden="true">↗</span></button></div>
+              </form>
+            </section>
+            <section class="surface-panel profile-settings-card" aria-labelledby="profile-password-title">
+              <div class="panel-heading"><div><span class="eyebrow">ACCOUNT SECURITY</span><h2 id="profile-password-title">Change password</h2></div><span class="profile-settings-icon jade" aria-hidden="true">⌑</span></div>
+              <p class="profile-settings-copy">Verify your current password before choosing a new one. Use at least 8 characters.</p>
+              <form id="profile-password-form" novalidate>
+                <div class="profile-input-grid single-column">
+                  <div class="profile-input-field"><label for="profile-current-password">Current password</label><input id="profile-current-password" name="currentPassword" type="password" autocomplete="current-password" required></div>
+                  <div class="profile-input-field"><label for="profile-new-password">New password</label><input id="profile-new-password" name="newPassword" type="password" autocomplete="new-password" minlength="8" maxlength="100" required></div>
+                  <div class="profile-input-field"><label for="profile-confirm-password">Confirm new password</label><input id="profile-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="100" required></div>
+                </div>
+                <div class="profile-form-actions"><button class="button button-secondary" type="submit">Update password</button></div>
+              </form>
+            </section>
+            <section class="surface-panel profile-settings-card profile-danger-card" aria-labelledby="profile-delete-title">
+              <div class="panel-heading"><div><span class="eyebrow">PERMANENT ACTION</span><h2 id="profile-delete-title">Delete account</h2></div><span class="profile-settings-icon danger" aria-hidden="true">!</span></div>
+              <p class="profile-settings-copy" id="profile-delete-description">This permanently removes your login and profile. The action cannot be undone.</p>
+              <form id="profile-delete-form" novalidate>
+                <div class="profile-delete-grid">
+                  <div class="profile-input-field"><label for="profile-delete-password">Current password</label><input id="profile-delete-password" name="currentPassword" type="password" autocomplete="current-password" required></div>
+                  <div class="profile-input-field"><label for="profile-delete-confirmation">Type <strong id="profile-delete-username">your username</strong> to confirm</label><input id="profile-delete-confirmation" name="confirmationUsername" type="text" autocomplete="off" required></div>
+                </div>
+                <p class="profile-delete-note" id="profile-delete-note">This action cannot be undone.</p>
+                <div class="profile-form-actions"><button class="button button-danger" type="submit">Delete my account</button></div>
+              </form>
+            </section>
+          </div>
+        </section>
+      </main>
+      <footer class="app-footer"><span><strong>Aurelia</strong> / library operations</span><span>Make room for curiosity <span aria-hidden="true">✦</span></span></footer>
+    </div>
   </div>
-  <div id="modal-root" aria-live="polite"></div>
-  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <div id="modal-root"></div>
+  <div id="toast-region" class="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
   <script type="module" src="/js/main.js"></script>
 </body>
 </html>
