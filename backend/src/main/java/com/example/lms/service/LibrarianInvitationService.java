@@ -12,6 +12,8 @@ import com.example.lms.exception.ResourceNotFoundException;
 import com.example.lms.repository.AccountRepository;
 import com.example.lms.repository.LibrarianInvitationRepository;
 import com.example.lms.repository.LibrarianProfileRepository;
+import jakarta.mail.internet.AddressException;
+import jakarta.mail.internet.InternetAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -20,20 +22,26 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.HexFormat;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientException;
 
 @Service
 public class LibrarianInvitationService {
     private static final SecureRandom RANDOM = new SecureRandom();
-
     private final LibrarianInvitationRepository invitations;
     private final AccountRepository accounts;
     private final LibrarianProfileRepository librarians;
@@ -41,6 +49,10 @@ public class LibrarianInvitationService {
     private final ObjectProvider<JavaMailSender> mailSenders;
     private final String smtpHost;
     private final String mailFrom;
+    private final String mailFromName;
+    private final String emailProvider;
+    private final String emailApiKey;
+    private final String emailApiUrl;
     private final String publicBaseUrl;
     private final long expiryHours;
 
@@ -53,7 +65,11 @@ public class LibrarianInvitationService {
             @Value("${spring.mail.host:}") String smtpHost,
             @Value("${lms.mail.from:}") String mailFrom,
             @Value("${lms.invitation.base-url:http://localhost:8080}") String publicBaseUrl,
-            @Value("${lms.invitation.expiry-hours:24}") long expiryHours) {
+            @Value("${lms.invitation.expiry-hours:24}") long expiryHours,
+            @Value("${lms.mail.provider:smtp}") String emailProvider,
+            @Value("${lms.mail.api-key:}") String emailApiKey,
+            @Value("${lms.mail.from-name:Aurelia Library}") String mailFromName,
+            @Value("${lms.mail.api-url:https://api.brevo.com/v3/smtp/email}") String emailApiUrl) {
         this.invitations = invitations;
         this.accounts = accounts;
         this.librarians = librarians;
@@ -61,6 +77,10 @@ public class LibrarianInvitationService {
         this.mailSenders = mailSenders;
         this.smtpHost = smtpHost;
         this.mailFrom = mailFrom;
+        this.mailFromName = mailFromName;
+        this.emailProvider = emailProvider == null ? "smtp" : emailProvider.trim().toLowerCase(Locale.ROOT);
+        this.emailApiKey = emailApiKey;
+        this.emailApiUrl = emailApiUrl;
         this.publicBaseUrl = stripTrailingSlash(publicBaseUrl);
         this.expiryHours = expiryHours;
         if (expiryHours < 1 || !StringUtils.hasText(publicBaseUrl)) {
@@ -135,6 +155,16 @@ public class LibrarianInvitationService {
     }
 
     private void ensureMailConfigured() {
+        if ("brevo".equals(emailProvider)) {
+            if (!StringUtils.hasText(emailApiKey) || !StringUtils.hasText(senderEmail()) || !StringUtils.hasText(emailApiUrl)) {
+                throw new MailNotConfiguredException(
+                        "Librarian invitations require LMS_EMAIL_API_KEY and a verified sender address in LMS_MAIL_FROM when using Brevo.");
+            }
+            return;
+        }
+        if (!"smtp".equals(emailProvider)) {
+            throw new MailNotConfiguredException("Unsupported LMS_EMAIL_PROVIDER. Configure 'smtp' or 'brevo'.");
+        }
         if (!StringUtils.hasText(smtpHost) || !StringUtils.hasText(mailFrom) || mailSenders.getIfAvailable() == null) {
             throw new MailNotConfiguredException(
                     "Librarian invitations require SMTP settings. Configure LMS_SMTP_HOST and LMS_MAIL_FROM first.");
@@ -142,27 +172,79 @@ public class LibrarianInvitationService {
     }
 
     private void sendInvitationEmail(LibrarianInvitation invitation, String rawToken) {
-        JavaMailSender sender = mailSenders.getIfAvailable();
-        if (sender == null) {
-            throw new MailNotConfiguredException("The invitation email service is not available.");
-        }
         String invitationUrl = publicBaseUrl + "/librarian-setup.html#token=" + rawToken;
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(mailFrom.trim());
-        message.setTo(invitation.getEmail());
-        message.setSubject("Your Aurelia Library staff invitation");
-        message.setText("Hello " + invitation.getName() + ",\n\n"
+        String subject = "Your Aurelia Library staff invitation";
+        String text = "Hello " + invitation.getName() + ",\n\n"
                 + "An administrator invited you to join Aurelia Library as a librarian.\n\n"
                 + "Your username is: " + invitation.getUsername() + "\n\n"
                 + "Choose your password using this one-time link:\n" + invitationUrl + "\n\n"
                 + "The link expires at " + invitation.getExpiresAt() + " (UTC) and can be used only once.\n"
                 + "If you were not expecting this invitation, you can ignore this email.\n\n"
-                + "Aurelia Library");
-        try {
-            sender.send(message);
-        } catch (MailException exception) {
-            throw exception;
+                + "Aurelia Library";
+
+        if ("brevo".equals(emailProvider)) {
+            sendWithBrevo(invitation, subject, text);
+            return;
         }
+
+        JavaMailSender sender = mailSenders.getIfAvailable();
+        if (sender == null) {
+            throw new MailNotConfiguredException("The configured SMTP email service is not available.");
+        }
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(mailFrom.trim());
+        message.setTo(invitation.getEmail());
+        message.setSubject(subject);
+        message.setText(text);
+        sender.send(message);
+    }
+
+    private void sendWithBrevo(LibrarianInvitation invitation, String subject, String text) {
+        Map<String, Object> sender = Map.of("name", senderName(), "email", senderEmail());
+        Map<String, Object> recipient = Map.of("email", invitation.getEmail(), "name", invitation.getName());
+        Map<String, Object> payload = Map.of(
+                "sender", sender,
+                "to", List.of(recipient),
+                "subject", subject,
+                "textContent", text);
+        try {
+            RestClient.create()
+                    .post()
+                    .uri(emailApiUrl.trim())
+                    .header("api-key", emailApiKey.trim())
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(payload)
+                    .retrieve()
+                    .toBodilessEntity();
+        } catch (RestClientException exception) {
+            throw new MailSendException("The invitation email could not be sent through the configured email API.", exception);
+        }
+    }
+
+    private String senderEmail() {
+        if (!StringUtils.hasText(mailFrom)) return null;
+        try {
+            InternetAddress[] addresses = InternetAddress.parse(mailFrom.trim(), true);
+            return addresses.length == 1 ? addresses[0].getAddress() : null;
+        } catch (AddressException exception) {
+            return null;
+        }
+    }
+
+    private String senderName() {
+        if (StringUtils.hasText(mailFromName)) return mailFromName.trim();
+        if (StringUtils.hasText(mailFrom)) {
+            try {
+                InternetAddress[] addresses = InternetAddress.parse(mailFrom.trim(), true);
+                if (addresses.length == 1 && StringUtils.hasText(addresses[0].getPersonal())) {
+                    return addresses[0].getPersonal();
+                }
+            } catch (AddressException ignored) {
+                // Use the neutral default if the optional display name cannot be parsed.
+            }
+        }
+        return "Aurelia Library";
     }
 
     private static String newToken() {

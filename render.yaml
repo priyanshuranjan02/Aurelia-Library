@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: aurelia-library-management
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: LMS_DB_URL
+        sync: false
+      - key: LMS_DB_USERNAME
+        sync: false
+      - key: LMS_DB_PASSWORD
+        sync: false
+      - key: LMS_EMAIL_PROVIDER
+        value: brevo
+      - key: LMS_EMAIL_API_KEY
+        sync: false
+      - key: LMS_MAIL_FROM
+        sync: false
+      - key: LMS_MAIL_FROM_NAME
+        value: Aurelia Library
+      - key: LMS_PUBLIC_BASE_URL
+        fromService:
+          type: web
+          name: aurelia-library-management
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: SERVER_FORWARD_HEADERS_STRATEGY
+        value: framework
+      - key: SERVER_SERVLET_SESSION_COOKIE_SECURE
+        value: "true"

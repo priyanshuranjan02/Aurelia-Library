@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     ApiErrorResponse mailFailed(MailException exception, HttpServletRequest request) {
         return error(503, "INVITATION_EMAIL_FAILED",
-                "The invitation email could not be sent. Check the SMTP configuration and try again.", request, List.of());
+                "The invitation email could not be sent. Check the configured email provider and sender settings, then try again.", request, List.of());
     }
 
     private ApiErrorResponse error(int status, String code, String message, HttpServletRequest request,
