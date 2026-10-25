@@ -111,7 +111,7 @@ Mobile evidence is maintained in [screenshots/mobile](screenshots/mobile):
 
 ## Future Improvements
 
-Pagination, advanced search, categories, fines, notifications, Swagger/OpenAPI, Docker deployment, reservations, physical-copy modelling, and JWT-based API access are intentionally deferred from v1.0.0.
+Pagination, advanced search, categories, fines, notifications, reservations, physical-copy modelling, and JWT-based API access are intentionally deferred from v1.0.0.
 
 ## Documentation
 
@@ -121,3 +121,4 @@ Pagination, advanced search, categories, fines, notifications, Swagger/OpenAPI, 
 - [Setup](docs/SETUP.md)
 - [Testing](docs/TESTING.md)
 - [Changelog](docs/CHANGELOG.md)
+- [Free deployment guide](docs/DEPLOYMENT_FREE.md)
