@@ -25,11 +25,11 @@ These captures reflect the deployed Aurelia Library interface, including the wor
 
 <table>
   <tr>
-    <td width="50%" valign="top"><a href="screenshots/current/overview-dashboard.jpg"><img src="screenshots/current/overview-dashboard.jpg" alt="Current Aurelia Library workspace overview and library statistics" width="100%"></a><p align="center"><sub><strong>01 · Workspace overview</strong></sub></p></td>
-    <td width="50%" valign="top"><a href="screenshots/current/book-collection.jpg"><img src="screenshots/current/book-collection.jpg" alt="Current Aurelia Library book catalogue and availability" width="100%"></a><p align="center"><sub><strong>02 · Book collection</strong></sub></p></td>
+    <td width="50%" valign="top"><a href="screenshots/current/overview-dashboard.png"><img src="screenshots/current/overview-dashboard.png" alt="Current Aurelia Library workspace overview and library statistics" width="100%"></a><p align="center"><sub><strong>01 · Workspace overview</strong></sub></p></td>
+    <td width="50%" valign="top"><a href="screenshots/current/book-collection.png"><img src="screenshots/current/book-collection.png" alt="Current Aurelia Library book catalogue and availability" width="100%"></a><p align="center"><sub><strong>02 · Book collection</strong></sub></p></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><a href="screenshots/current/invitation-setup.jpg"><img src="screenshots/current/invitation-setup.jpg" alt="Current Aurelia Library one-time librarian password setup confirmation" width="78%"></a><p align="center"><sub><strong>03 · Staff onboarding</strong></sub></p></td>
+    <td colspan="2" align="center"><a href="screenshots/current/librarian-dashboard.png"><img src="screenshots/current/librarian-dashboard.png" alt="Current Aurelia Library librarian dashboard" width="78%"></a><p align="center"><sub><strong>03 · Librarian dashboard</strong></sub></p></td>
   </tr>
 </table>
 
@@ -56,7 +56,7 @@ These captures reflect the deployed Aurelia Library interface, including the wor
       Session-based authentication, BCrypt password hashes, server-side validation, CSRF protection, and role-based authorization.
     </td>
     <td width="33%" valign="top">
-      <h3>✉️ Staff onboarding</h3>
+      <h3>✉️ Librarian dashboard</h3>
       Administrators invite librarians by email. One-time setup links let invited staff choose their own password.
     </td>
     <td width="33%" valign="top">
@@ -88,10 +88,58 @@ flowchart LR
     Repositories --> DB[("Aiven MySQL")]
     Services --> Mail["Brevo HTTPS Email API"]
     Flyway["Flyway Migrations"] --> DB
+    Fetch --> Controllers["Spring REST Controllers"]
+    Controllers --> Security["Spring Security"]
+    Security --> Services["Transactional Services"]
+    Services --> Repositories["Spring Data JPA"]
+    Repositories --> DB[("Aiven MySQL")]
+    Services --> Mail["Brevo HTTPS Email API"]
+    Flyway["Flyway Migrations"] --> DB
 ```
 
 The frontend and REST API are served by the same Spring Boot application, keeping requests on one origin. Services handle business rules and transactional operations; Flyway versions schema changes, and Hibernate validates the mapped schema at startup.
+The frontend and REST API are served by the same Spring Boot application, keeping requests on one origin. Services handle business rules and transactional operations; Flyway versions schema changes, and Hibernate validates the mapped schema at startup.
 
+## Technology stack
+
+<table>
+  <tr><th align="left">Layer</th><th align="left">Technology</th></tr>
+  <tr><td>Runtime and backend</td><td>Java 21 · Spring Boot 3.5 · Spring MVC</td></tr>
+  <tr><td>Security</td><td>Spring Security 6.5 · BCrypt · session authentication · CSRF protection</td></tr>
+  <tr><td>Persistence</td><td>Spring Data JPA · Hibernate · MySQL</td></tr>
+  <tr><td>Schema management</td><td>Flyway migrations · Hibernate schema validation</td></tr>
+  <tr><td>Frontend</td><td>HTML · CSS · JavaScript · Fetch API</td></tr>
+  <tr><td>Email</td><td>Brevo HTTPS transactional email API; SMTP for local development</td></tr>
+  <tr><td>Build, deployment, tests</td><td>Maven Wrapper · Docker · Render · JUnit 5 · MockMvc · H2</td></tr>
+</table>
+
+## Live deployment
+
+<table>
+    <tr><th>Component</th><th>Hosted service</th></tr>
+    <tr><td>Web app and API</td><td><a href="https://aurelia-library-management.onrender.com">Render</a></td></tr>
+    <tr><td>Persistent database</td><td>Aiven MySQL</td></tr>
+    <tr><td>Librarian invitation email</td><td>Brevo transactional API over HTTPS</td></tr>
+</table>
+  <p><a href="https://aurelia-library-management.onrender.com"><strong>↗ Open the live application</strong></a></p>
+
+This is a portfolio/demo deployment on free tiers. Render may spin the service down after inactivity, and the free Aiven database may power down after extended inactivity. Invitation delivery depends on sender/provider policies and authentication. See the [deployment guide](docs/DEPLOYMENT_FREE.md) for setup and operational limitations.
+
+## Run locally
+
+<details>
+  <summary><strong>Prerequisites and setup</strong></summary>
+
+  **Prerequisites:** Java 21+, MySQL, and Git.
+
+  ### 1. Clone the repository
+
+  ```bash
+  git clone https://github.com/priyanshuranjan02/Aurelia-Library.git
+  cd Aurelia-Library
+  ```
+
+  ### 2. Configure MySQL and the initial administrator
 ## Technology stack
 
 <table>
@@ -150,14 +198,36 @@ This is a portfolio/demo deployment on free tiers. Render may spin the service d
   ```bash
   ./mvnw spring-boot:run
   ```
+  ```bash
+  export LMS_DB_URL='jdbc:mysql://localhost:3306/librarydb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC'
+  export LMS_DB_USERNAME='your_mysql_user'
+  export LMS_DB_PASSWORD='your_mysql_password'
+  export LMS_BOOTSTRAP_ADMIN_USERNAME='admin'
+  export LMS_BOOTSTRAP_ADMIN_PASSWORD='choose-a-strong-unique-password'
+  ```
 
+  Replace the example values with your own local credentials. Never commit passwords, API keys, or populated environment files.
+
+  The bootstrap administrator is created only if both bootstrap variables are set and the username does not already exist. Its password is stored as a BCrypt hash; the bootstrap setting does not reset an existing account's password.
+
+  ### 3. Start the application
+
+  ```bash
+  ./mvnw spring-boot:run
+  ```
+
+  Open [http://localhost:8080](http://localhost:8080).
   Open [http://localhost:8080](http://localhost:8080).
 
   Flyway manages schema creation and migrations. For more details, see [Setup](docs/SETUP.md).
 </details>
+  Flyway manages schema creation and migrations. For more details, see [Setup](docs/SETUP.md).
+</details>
 
 ## Quality checks
+## Quality checks
 
+Run the automated test suite from the repository root:
 Run the automated test suite from the repository root:
 
 ```bash
@@ -191,14 +261,14 @@ Full endpoint details, roles, response formats, and error codes are documented i
   </tr>
   <tr>
     <td width="50%" valign="top"><strong>🚀 Deployment</strong><br><a href="docs/DEPLOYMENT_FREE.md">Free-tier deployment guide</a></td>
-    <td width="50%" valign="top"><strong>🖼️ Current UI screenshots</strong><br><a href="screenshots/current/overview-dashboard.jpg">Workspace overview</a><br><a href="screenshots/current/book-collection.jpg">Book collection</a><br><a href="screenshots/current/invitation-setup.jpg">Staff onboarding</a></td>
+    <td width="50%" valign="top"><strong>🖼️ Current UI screenshots</strong><br><a href="screenshots/current/overview-dashboard.png">Workspace overview</a><br><a href="screenshots/current/book-collection.png">Book collection</a><br><a href="screenshots/current/librarian-dashboard.png">Librarian dashboard</a></td>
   </tr>
 </table>
 
 <details>
   <summary><strong>Current screenshot index</strong></summary>
 
-  [Workspace overview](screenshots/current/overview-dashboard.jpg) · [Book collection](screenshots/current/book-collection.jpg) · [Staff onboarding](screenshots/current/invitation-setup.jpg)
+  [Workspace overview](screenshots/current/overview-dashboard.png) · [Book collection](screenshots/current/book-collection.png) · [Librarian dashboard](screenshots/current/librarian-dashboard.png)
 </details>
 
 ## Next ideas
