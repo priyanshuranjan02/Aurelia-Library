@@ -88,10 +88,58 @@ flowchart LR
     Repositories --> DB[("Aiven MySQL")]
     Services --> Mail["Brevo HTTPS Email API"]
     Flyway["Flyway Migrations"] --> DB
+    Fetch --> Controllers["Spring REST Controllers"]
+    Controllers --> Security["Spring Security"]
+    Security --> Services["Transactional Services"]
+    Services --> Repositories["Spring Data JPA"]
+    Repositories --> DB[("Aiven MySQL")]
+    Services --> Mail["Brevo HTTPS Email API"]
+    Flyway["Flyway Migrations"] --> DB
 ```
 
 The frontend and REST API are served by the same Spring Boot application, keeping requests on one origin. Services handle business rules and transactional operations; Flyway versions schema changes, and Hibernate validates the mapped schema at startup.
+The frontend and REST API are served by the same Spring Boot application, keeping requests on one origin. Services handle business rules and transactional operations; Flyway versions schema changes, and Hibernate validates the mapped schema at startup.
 
+## Technology stack
+
+<table>
+  <tr><th align="left">Layer</th><th align="left">Technology</th></tr>
+  <tr><td>Runtime and backend</td><td>Java 21 · Spring Boot 3.5 · Spring MVC</td></tr>
+  <tr><td>Security</td><td>Spring Security 6.5 · BCrypt · session authentication · CSRF protection</td></tr>
+  <tr><td>Persistence</td><td>Spring Data JPA · Hibernate · MySQL</td></tr>
+  <tr><td>Schema management</td><td>Flyway migrations · Hibernate schema validation</td></tr>
+  <tr><td>Frontend</td><td>HTML · CSS · JavaScript · Fetch API</td></tr>
+  <tr><td>Email</td><td>Brevo HTTPS transactional email API; SMTP for local development</td></tr>
+  <tr><td>Build, deployment, tests</td><td>Maven Wrapper · Docker · Render · JUnit 5 · MockMvc · H2</td></tr>
+</table>
+
+## Live deployment
+
+<table>
+    <tr><th>Component</th><th>Hosted service</th></tr>
+    <tr><td>Web app and API</td><td><a href="https://aurelia-library-management.onrender.com">Render</a></td></tr>
+    <tr><td>Persistent database</td><td>Aiven MySQL</td></tr>
+    <tr><td>Librarian invitation email</td><td>Brevo transactional API over HTTPS</td></tr>
+</table>
+  <p><a href="https://aurelia-library-management.onrender.com"><strong>↗ Open the live application</strong></a></p>
+
+This is a portfolio/demo deployment on free tiers. Render may spin the service down after inactivity, and the free Aiven database may power down after extended inactivity. Invitation delivery depends on sender/provider policies and authentication. See the [deployment guide](docs/DEPLOYMENT_FREE.md) for setup and operational limitations.
+
+## Run locally
+
+<details>
+  <summary><strong>Prerequisites and setup</strong></summary>
+
+  **Prerequisites:** Java 21+, MySQL, and Git.
+
+  ### 1. Clone the repository
+
+  ```bash
+  git clone https://github.com/priyanshuranjan02/Aurelia-Library.git
+  cd Aurelia-Library
+  ```
+
+  ### 2. Configure MySQL and the initial administrator
 ## Technology stack
 
 <table>
@@ -150,14 +198,36 @@ This is a portfolio/demo deployment on free tiers. Render may spin the service d
   ```bash
   ./mvnw spring-boot:run
   ```
+  ```bash
+  export LMS_DB_URL='jdbc:mysql://localhost:3306/librarydb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC'
+  export LMS_DB_USERNAME='your_mysql_user'
+  export LMS_DB_PASSWORD='your_mysql_password'
+  export LMS_BOOTSTRAP_ADMIN_USERNAME='admin'
+  export LMS_BOOTSTRAP_ADMIN_PASSWORD='choose-a-strong-unique-password'
+  ```
 
+  Replace the example values with your own local credentials. Never commit passwords, API keys, or populated environment files.
+
+  The bootstrap administrator is created only if both bootstrap variables are set and the username does not already exist. Its password is stored as a BCrypt hash; the bootstrap setting does not reset an existing account's password.
+
+  ### 3. Start the application
+
+  ```bash
+  ./mvnw spring-boot:run
+  ```
+
+  Open [http://localhost:8080](http://localhost:8080).
   Open [http://localhost:8080](http://localhost:8080).
 
   Flyway manages schema creation and migrations. For more details, see [Setup](docs/SETUP.md).
 </details>
+  Flyway manages schema creation and migrations. For more details, see [Setup](docs/SETUP.md).
+</details>
 
 ## Quality checks
+## Quality checks
 
+Run the automated test suite from the repository root:
 Run the automated test suite from the repository root:
 
 ```bash
