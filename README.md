@@ -29,7 +29,8 @@ These captures reflect the deployed Aurelia Library interface, including the wor
     <td width="50%" valign="top"><a href="screenshots/current/book-collection.png"><img src="screenshots/current/book-collection.png" alt="Current Aurelia Library book catalogue and availability" width="100%"></a><p align="center"><sub><strong>02 · Book collection</strong></sub></p></td>
   </tr>
   <tr>
-    <td colspan="2" align="center"><a href="screenshots/current/librarian-dashboard.png"><img src="screenshots/current/librarian-dashboard.png" alt="Current Aurelia Library librarian dashboard" width="78%"></a><p align="center"><sub><strong>03 · Librarian dashboard</strong></sub></p></td>
+    <td width="50%" valign="top"><a href="screenshots/current/librarian-dashboard.png"><img src="screenshots/current/librarian-dashboard.png" alt="Current Aurelia Library librarian dashboard" width="100%"></a><p align="center"><sub><strong>03 · Librarian dashboard</strong></sub></p></td>
+    <td width="50%" valign="top"><a href="screenshots/current/student-role.png"><img src="screenshots/current/student-role.png" alt="Current Aurelia Library Student Role" width="100%"></a><p align="center"><sub><strong>04 · Student Role</strong></sub></p></td>
   </tr>
 </table>
 
