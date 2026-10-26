@@ -226,9 +226,7 @@ This is a portfolio/demo deployment on free tiers. Render may spin the service d
 </details>
 
 ## Quality checks
-## Quality checks
 
-Run the automated test suite from the repository root:
 Run the automated test suite from the repository root:
 
 ```bash
